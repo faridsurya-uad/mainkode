@@ -1,0 +1,126 @@
+<body>
+    <head>
+        <style>
+            body{
+                overflow: hidden;
+                background-color: #ccc;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+        <script src="https://unpkg.com/konva@7.0.3/konva.min.js"></script>
+        <script>
+            //membuat global variabel
+            let stage, layer, snake = [], positions=[], snakeSize = 50;
+
+            function init()
+            {
+                createApp();
+                //coba bikin ular
+                createSnake(6);         
+                //panggil kontroller
+                controller();
+            }
+            function createApp()
+            {
+                stage = new Konva.Stage({
+                    container: 'container',   // id of container <div>
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    backgroundColor:'grey'
+                });
+                layer = new Konva.Layer();
+                stage.add(layer);
+            }
+
+            function createSnake(n)
+            {
+                //membuat ular dengan jumlah kotak sebanyak n
+                let xHead = 200;
+                let yHead = 200;
+                let size = snakeSize;
+                for(let i=0; i < n; i++)
+                {
+                    let rect = createRect(size, xHead+(i*size), yHead);
+                    layer.add(rect);  
+                    //simpan objek pada array snake                  
+                    snake.push(rect);
+                    //simpan posisi objek pada array positions
+                    positions.push([rect.x(), rect.y()]);
+                }
+                layer.batchDraw();
+            }
+
+            function createRect(w,x,y)
+            {
+                var rect = new Konva.Rect({
+                    x: x,
+                    y: y,
+                    width: w,
+                    height: w,
+                    fill: 'blue',
+                    stroke: 'black',
+                    strokeWidth: 2,
+                });
+                return rect;               
+            }
+
+            //buat kontrol gerakan ular
+            function controller()
+            {
+                window.addEventListener('keydown',e=>{
+                    //ambil posisi awal
+                    let newXpos = snake[0].attrs.x;
+                    let newYpos = snake[0].attrs.y;
+                    //pakai switch
+                    let keyCode = e.keyCode;
+                    
+                    switch(keyCode)
+                    {
+                        //kanan
+                        case 39:
+                            //ambil posisi baru
+                            newXpos = newXpos + snakeSize;                            
+                        break;
+                        //bawah
+                        case 40:
+                            //jika gerak ke bawah, update nilai y saja
+                            newYpos = newYpos + snakeSize; 
+                        break;
+                        //kiri
+                        case 37:
+                            //jika gerak kiri, update nilai x saja
+                            newXpos = newXpos - snakeSize;
+                        break;
+                        //atas
+                        case 38:
+                            //jika gerak atas, update nilai y saja
+                            newYpos = newYpos - snakeSize;
+                        break;
+                        default:
+                        return;
+                    }
+                    //masukkan posisi baru untuk kepala
+                    positions.unshift([newXpos, newYpos]);
+                    //hapus posisi ekor
+                    positions.pop();
+                    //panggil fungsi update posisi objek
+                    moveSnake();
+                })
+            }
+
+            function moveSnake()
+            {
+                for(let i=0; i<positions.length; i++)
+                {
+                    snake[i].x(positions[i][0]);
+                    snake[i].y(positions[i][1]);
+                }
+                layer.batchDraw();
+            }
+
+            init();
+        </script>
+    </body>
+</body>
