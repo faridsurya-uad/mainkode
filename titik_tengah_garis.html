@@ -1,0 +1,96 @@
+<html>
+    <head>
+        <style>
+            body{
+                overflow: hidden;
+                background-color: #ccc;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+        <script src="https://unpkg.com/konva@7.0.3/konva.min.js"></script>
+        <script>
+            let stage, layer, dotA, dotB, dotC, line;
+
+            function init()
+            {
+                createApp();
+                //buat titik 
+                dotA = createDot(10, 200, 100, 'red', true);
+                dotB = createDot(10, 400, 100, 'red', true);                
+                layer.add(dotA);
+                layer.add(dotB);
+
+                //buat garis
+                line = createLine([dotA.x(), dotA.y(), dotB.x(), dotB.y()], 'black');
+                layer.add(line);
+
+                //buat titik antara dua garis
+                let midX = (dotA.x()+dotB.x())*0.5;
+                let midY = (dotA.y()+dotB.y())*0.5;
+                dotC = createDot(10, midX, midY, 'blue', false);
+                layer.add(dotC);
+
+                layer.batchDraw();
+                
+            }
+            function createApp()
+            {
+                stage = new Konva.Stage({
+                    container: 'container',   // id of container <div>
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                });
+                layer = new Konva.Layer();
+                stage.add(layer);
+            }
+
+            //membuat titik
+            function createDot(r, x, y, clr, draggable)
+            {
+                var circle = new Konva.Circle({
+                    x: x,
+                    y: y,
+                    radius: r,
+                    draggable: draggable,
+                    fill: clr,
+                    stroke: 'black',
+                    strokeWidth: 2,
+                });
+                //update data garis saat titik drag
+                circle.on('dragmove',e=>{
+                    //update nilai points pada garis
+                    line.points([dotA.x(), dotA.y(), dotB.x(), dotB.y()]);
+                    //update nilai x dan y pada dotC
+                    let midX = (dotA.x()+dotB.x())*0.5;
+                    let midY = (dotA.y()+dotB.y())*0.5;
+                    dotC.x(midX);
+                    dotC.y(midY);
+                    layer.batchDraw();
+                });
+                return circle;
+            }
+
+            //buat garis antara dua titik
+            function createLine(points, clr)
+            {
+                var line = new Konva.Line({
+                    points: points,
+                    stroke: clr,
+                    strokeWidth: 2                    
+                });
+                return line;
+            }
+
+            //terimakasih
+            //subs ya
+            //share juga
+            //happy coding and sharing
+            //code ada di github
+            //https://github.com/faridsurya-uad/mainkode
+
+            init();
+        </script>
+    </body>
+</html>
