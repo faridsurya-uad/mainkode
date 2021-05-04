@@ -1,0 +1,108 @@
+<html>
+    <head>
+        <style>
+            body{
+                background-color: #ccc;
+                overflow: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+        <script src="https://unpkg.com/konva@7.0.3/konva.min.js"></script>
+        <script>
+            //global variabel
+            let 
+            stage, 
+            layer, 
+            ball, 
+            t = 0; //variabel waktu
+            let g = 0.5; //konstanta grafitasi
+            let isDragged = false;
+            let h0 = 0; //berikan nilai h awal agar objek jatuh saat objek dilepaskan
+            function init()
+            {
+                //jalankan app
+                createApp();
+
+                //create ball
+                ball = createCircle(40, 200, 200, 'red');
+                layer.add(ball);
+                layer.batchDraw();
+
+                //jalankan animasi 
+                //update dulu nilai h0 sesuai dengan posisi y untuk objek ball
+                h0 = ball.y();
+                startAnimation();
+            }
+            function createApp()
+            {
+                stage = new Konva.Stage({
+                    container: 'container',
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                });
+                layer = new Konva.Layer();
+                stage.add(layer);
+            }
+
+            //buat fungsi lingkaran
+            function createCircle(radius, x, y, clr)
+            {
+                let circle = new Konva.Circle({
+                    radius: radius,
+                    x: x,
+                    y: y,
+                    fill: clr,
+                    draggable: true //make it draggable
+                });
+                circle.on('dragmove',e=>{
+                    isDragged = true;
+                });
+                circle.on('dragend',e=>{
+                    isDragged = false;
+                })
+                return circle;
+            }
+
+            //buat fungsi animasi. Fungsi ini akan update dalam durasi waktu tertentu. 
+            //biasanya dalam frame per second
+
+            function startAnimation()
+            {
+                var anim = new Konva.Animation(function(frame) {
+                var time = frame.time,
+                    timeDiff = frame.timeDiff,
+                    frameRate = frame.frameRate;
+
+                    // update 
+                    //penerapan rumus gerak jatuh bebas
+                   
+
+                    //gerak jatuh bebas berhasil. kita terapkan GJB saat objek tidak di dragg.
+                    if(isDragged)
+                    {
+                        t = 0; // kembalikan nilai waktu ke 0, jika objek di drag
+                        h0 = ball.y(); //update nilai h awal 
+                    }else{
+                        //terapkan GJB jika objek tidak di drag
+                        t++;
+                        let h = (0.5 * g * t * t) + h0;
+                        ball.y(h);
+                    }
+
+                    //stop objek jika melebihi nilai y tertentu
+                    if(ball.y() > window.innerHeight - 50)
+                    {
+                        ball.y(window.innerHeight - 50);
+                    }
+                   
+                }, layer);
+
+                anim.start();
+            }
+
+            init();
+        </script>
+    </body>
+</html>
